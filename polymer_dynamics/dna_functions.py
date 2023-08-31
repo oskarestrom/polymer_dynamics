@@ -435,7 +435,6 @@ def add_variables(df, T_deg_C, C_list):
     #Radii of gyration
     df['R_e_ideal'] = df.apply(lambda row: row.b* np.sqrt(row.N), axis=1)
     df['R_g_ideal'] = df.apply(lambda row: row.R_e_ideal/np.sqrt(6), axis=1)   
-    df['R_g'] = df.apply(lambda row: row.R_g_ideal/np.sqrt(6), axis=1)
 
     #Effective width
     df['w_eff_T23C'] = df.apply(lambda row: calc_w_eff(row.I, T_deg_C=23), axis=1)
@@ -449,14 +448,12 @@ def add_variables(df, T_deg_C, C_list):
 
     #Overlap concentrations
     df['c_overlap_ideal'] = df.apply(lambda row: RadiusToExpOverlapConc(row.N_bp, row.R_g_ideal), axis=1)
-    df['c_overlap'] = df.apply(lambda row: RadiusToExpOverlapConc(row.N_bp, row.R_g), axis=1)
     df['c_overlap_T23C_Flory'] = df.apply(lambda row: RadiusToExpOverlapConc(row.N_bp, row.R_g_T23C_Flory), axis=1)
 
     if len(C_list) > 0:
         df['C_ratio_Flory'] = df.apply(lambda row: row.conc_DNA/row.c_overlap_T23C_Flory, axis=1)  
 
     # Relaxation times
-    df['tau_zimm'] = df.apply(lambda row: calc_zimm_relaxation_time_conc_dep(row.b, row.N, eta_s=row.eta_s,  T_deg_C=row.T_deg_C, C=row.conc_DNA, C_overlap=row.c_overlap), axis=1)
     df['tau_zimm_low_c'] = df.apply(lambda row: calc_zimm_relaxation_time(row.b, row.N, eta_s=row.eta_s,  T_deg_C=row.T_deg_C), axis=1)
 
     #Zimm Diffusion Coefficient
@@ -538,13 +535,6 @@ def plot_DNA_df(df, x_col, y_col, kwargs,save_fig = False, add_legend = False, y
 def calc_zimm_relaxation_time(b, N, eta_s=1e-3,  T_deg_C=23):
     T_Kelvin = T_deg_C + 273.15
     tau_z = (eta_s * b**3 * N**(3*FloryExp)) / (k_B*T_Kelvin)
-    return tau_z
-
-def calc_zimm_relaxation_time_conc_dep(b, N, eta_s=1e-3,  T_deg_C=23, C=0, C_overlap=40):
-    if C < C_overlap:
-        tau_z = calc_zimm_relaxation_time(b, N, eta_s=eta_s,  T_deg_C=T_deg_C)
-    else:
-        tau_z = np.nan
     return tau_z
 
 def get_rho(solvent):

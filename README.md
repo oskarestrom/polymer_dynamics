@@ -14,7 +14,7 @@ Based on the number of base pairs for a given DNA strand, we can extract the fol
 In the theory section below, the equations and assumptions for these variables are given.
 
 ## Using the script
-The function create_DNA_df() will create a pandas dataframe containing all the variables listed above.
+The function create_DNA_df() will create a pandas dataframe containing all the variables listed above. The DNA lengths 1,2,5,10,20,48.5 and 165.6 kbp are slected as long as an ionic strength corresponding to 5x TE with a dye to base pair staining ratio at 1:200. The temperature is set to 22 C (which the effective width and Zimm relaxation time depends on).
 ```python
 import polymer_dynamics.dna_functions as dn
 import numpy as np
@@ -46,19 +46,19 @@ df = dn.create_DNA_df(N_bp=N_bp,
 df = df.reset_index()
 
 pd.set_option('display.float_format', lambda x: '%.4g' % x)
-df[['L','I', 'l_p','w_eff_T23C','R_g','R_e_T23C_Flory','R_g_T23C_Flory','c_overlap_T23C_Flory', 'tau_zimm_low_c','C_ratio_Flory']]
-
-
+df[['N_bp','L','I', 'l_p','w_eff_T23C','R_e_ideal','R_g_ideal','R_e_T23C_Flory','R_g_T23C_Flory','c_overlap_ideal','c_overlap_T23C_Flory', 'tau_zimm_low_c','C_ratio_Flory']]
 ```
-|L  |I    |l_p    |w_eff_T23C|R_e_T23C_Flory|R_g_T23C_Flory|c_overlap_T23C_Flory|tau_zimm_low_c|C_ratio_Flory|FIELD10|
-|---|-----|-------|----------|--------------|--------------|--------------------|--------------|-------------|-------|
-|3.426e-07|0.03099|5.105e-08|5.79e-09  |1.243e-07     |5.075e-08     |1973                |0.002207      |0.2028       |0.2028 |
-|6.851e-07|0.03099|5.105e-08|5.79e-09  |1.868e-07     |7.626e-08     |1162                |0.00749       |0.3442       |0.3442 |
-|1.713e-06|0.03099|5.105e-08|5.79e-09  |3.201e-07     |1.307e-07     |577.6               |0.03768       |0.6925       |0.6925 |
-|3.426e-06|0.03099|5.105e-08|5.79e-09  |4.81e-07      |1.964e-07     |340.3               |0.1279        |1.175        |1.175  |
-|6.851e-06|0.03099|5.105e-08|5.79e-09  |7.229e-07     |2.951e-07     |200.5               |0.4341        |1.995        |1.995  |
-|1.661e-05|0.03099|5.105e-08|5.79e-09  |1.217e-06     |4.967e-07     |102                 |2.07          |3.921        |3.921  |
-|5.673e-05|0.03099|5.105e-08|5.79e-09  |2.504e-06     |1.022e-06     |39.96               |18.04         |10.01        |10.01  |
+The following table is generated:
+
+|N_bp|L    |I      |l_p|w_eff_T23C|R_e_ideal|R_g_ideal|R_e_T23C_Flory|R_g_T23C_Flory|c_overlap_ideal|c_overlap_T23C_Flory|tau_zimm_low_c|C_ratio_Flory|
+|----|-----|-------|---|----------|---------|---------|--------------|--------------|---------------|--------------------|--------------|-------------|
+|1000|3.426e-07|0.03099|5.105e-08|5.79e-09  |1.87e-07 |7.634e-08|1.243e-07     |5.075e-08     |579.3          |1973                |0.002207      |0.2028       |
+|2000|6.851e-07|0.03099|5.105e-08|5.79e-09  |2.645e-07|1.08e-07 |1.868e-07     |7.626e-08     |409.6          |1162                |0.00749       |0.3442       |
+|5000|1.713e-06|0.03099|5.105e-08|5.79e-09  |4.182e-07|1.707e-07|3.201e-07     |1.307e-07     |259.1          |577.6               |0.03768       |0.6925       |
+|10000|3.426e-06|0.03099|5.105e-08|5.79e-09  |5.914e-07|2.414e-07|4.81e-07      |1.964e-07     |183.2          |340.3               |0.1279        |1.175        |
+|20000|6.851e-06|0.03099|5.105e-08|5.79e-09  |8.363e-07|3.414e-07|7.229e-07     |2.951e-07     |129.5          |200.5               |0.4341        |1.995        |
+|48502|1.661e-05|0.03099|5.105e-08|5.79e-09  |1.302e-06|5.317e-07|1.217e-06     |4.967e-07     |83.18          |102                 |2.07          |3.921        |
+|165600|5.673e-05|0.03099|5.105e-08|5.79e-09  |2.406e-06|9.824e-07|2.504e-06     |1.022e-06     |45.02          |39.96               |18.04         |10.01        |
 
 
 
@@ -68,7 +68,6 @@ df[['L','I', 'l_p','w_eff_T23C','R_g','R_e_T23C_Flory','R_g_T23C_Flory','c_overl
 The length of a single base pair, $L_{single\space bp} = 34.0$ nm. The raw contour length is given by multiplying the length of a single base pair with the number of base pairs:
 
 $$L_{raw} = N_{bp}\cdot L_{single\space bp}$$
-
 
 ## Freely-jointed chain model
 In the freely-jointed chain (FJC) model, a polymer is seen as a chain of N stiff, rod-like segments, with no limitations in the bond angles. With this model, DNA is seen as a random-walk where the segments have equal probability to fluctuate in all directions. The segment length is called the Kuhn length, b, and is two times the persistence length:
@@ -104,7 +103,7 @@ $$l_p = 46.1 + \dfrac{1.9195 M}{ \sqrt{I}} nm$$
 
 In this work, however, OSF-theory is used to model the length-increase by ionic strength.
 
-Reisner et al., (2007) showed how the length of DNA-strands doubled when going a medium with high salt to low salt. They used the OSF-theory to explain their results [[Reisner, 2007]](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.99.058302). 
+Reisner et al., (2007) showed how the length of DNA-strands doubled when going a medium with high salt to low salt. They used the OSF-theory to explain their results [[Reisner, 2007]](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.99.058302).
 
 #### Staining effect on the Persistence length 
 Kundukad et al. (Doyle group)showed that the persistence length remains unaffected with the addition of YOYO-1 intercalating dyes [Kundakad 2014]. 
@@ -120,11 +119,20 @@ The results of Kundukad et al. [Kundukad, 2014] contend the claim by Reisner et 
 
 The number of Kuhn segments, $N$, which is used to define the radius, is then calculated as $N = L/b = L_{raw}*s_f/b$, where $s_f$ is the staining factor.
 
-#### Table: Number of kuhn segments, N, for various staining ratios at excess salt
-df_N = df[df['salt']=='excess'].copy()
-df_N=pd.pivot_table(df,index=['N_bp'],columns='staining',values='N')
-df_N = df_N[['raw', '1:200', '1:50', '1:10', '1:4']]
-df_N.head(20)
+### Ideal Chain Radius Calculation
+The worm-like chain (WLC) model (also called the Kratky-Porod model) describes the DNA dynamics more more accurately compared to the FJC-model by defining the polymer as semi-flexible. It means that the chain is stiff at the length scale of a monomer but flexible at the length scale of the entire polymer. The angle of a single segment affects the angle of its neighbour compared to FJC where the angles of segments are completely unrelated. The WLC model can be said to describe a polymer as a continuously flexible isotropic rod. The end-end distance of the polymer, $R_e$, is a measure of the size of the coiled-up polymer. The WLC model describes $R_e$ for long chains ($L≫L_p$) with [Colby & Rubinstein, 2003]:
+
+$$R_e=b \cdot \sqrt{N} = b \cdot \sqrt{L/b}$$
+
+Another way to characterize the size of a polymer is with the radius of gyration, $R_G$. The radius of gyration of a polymer is the root mean square distance from its center of mass. For an ideal chain, it is given by [Colby & Rubinstein, 2003]:
+
+$$R_G^{\theta}=\dfrac{R_e}{\sqrt{6}}=b\sqrt{\dfrac{N}{6}}$$
+
+$$ => $$
+
+$$R_G^{\theta} \propto \sqrt{L}$$
+
+$$R_G^{\theta} \propto l_p\sqrt{L}$$
 
 ### Flory Radius
 ### Effect of ionic environment on the radius
@@ -147,3 +155,46 @@ $$\kappa^2  = \dfrac{2000N_Ae^2I}{\epsilon_0\epsilon k_BT}$$
 where $N_A$ is Avogadro's number, $e$ the electronic charge and $I$ the ionic strength of the buffer. The Debye length should be on the order of tens of nanometer for low ionic strengths (~1 mM) and Å for higher ionic strenth buffers (see calculated values at [[Montes, 2019]](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6932854/)).
 
 Iarko et al. calculated the effective width of DNA at 5 x TBE to be 4.6 nm. [[Iarko, 2015]](https://publications.lib.chalmers.se/records/fulltext/225267/local_225267.pdf). This value is the same as I end up with in the calculation below.
+
+### The overlap concentration
+The relation between the volume fraction of a polymer solution, i.e. the ratio of the volume of the polymer in the solution to the volume of the solution is related to the mass concentration of the polymer, the ratio of the polymer mass to the volyme of the solution is given by:
+
+$$\phi= \dfrac{c}{\rho}= c \dfrac{v_{mon}N_A}{M_{mon}}$$
+
+where $\rho = \dfrac{M_{mon}}{v_{mon}N_A}$
+
+The volume fraction of **a single molecule inside its pervaded volume** (pervaded volume = the volume spanned by the polymer chain, $V=R^3$ [Rubinstein book, 2003]]) is called the overlap volume fraction $\phi^*$:
+
+$$\phi^* = \dfrac{\text{Volume taken up by the monomers}}{\text{Volume taken up by the polymer blob}}=\dfrac{Nv_{mon}}{V}$$
+
+where $N$ is the number of monomers, $v_{mon}$ is the monomer volume and $V$ is the pervaded volume of a single molecule chain. The corresponding concentration at this volume fraction is valled the overlap concentration, $c^*$:
+
+$$c^*=\dfrac{\text{Base pair concentration of the monomers}}{\text{Base pair concentration of the polymer blob}}\dfrac{\rho Nv_{mon}}{V}=\dfrac{M}{V N_{A}}$$
+
+where $M$ is the polymer molecular weight, $N_A$ is Avogadro’s constant. For a polymer with a volume, $V=4πR_g^3/3 $, the overlap concentration is written as [Doi 1998]:
+
+$$c^{*}= \dfrac{M}{\dfrac{4π}{3} R_g^3 N_A}$$
+
+where $M$ is the polymer molecular weight, $N_A$ is Avogadro’s constant, and $R_g$ is the radius of gyration. Using this equation, $c^*$ equals 64 $\mu g/mL$ for lambda DNA (48.5 kbp) and using $R_g$=0.58 $\mu m$.
+
+$M$ is calculated by multiplying the number of base pairs to the average weight of a base pair (650 Da or 0.65 kg/mol):
+
+$$M = N_{bp} \cdot M_{bp \ avg} = N_{bp} \cdot 0.65 \ kg/mol $$
+
+In other words, the concentration when the solution concentration is equal to that of the pervaded volume of a single polymer.
+$$c^*=\dfrac{\text{C solution}}{\text{C inside a blob}}$$
+
+### References
+
+Colby, R. H., & Rubinstein, M. (2003). Polymer physics. New-York: Oxford University, 100, 274.
+
+Hsieh, C. C., Balducci, A., & Doyle, P. S. (2008). Ionic effects on the equilibrium dynamics of DNA confined in nanoslits. Nano letters, 8(6), 1683-1688.
+
+Iarko, V., Werner, E., Nyberg, L. K., Müller, V., Fritzsche, J., Ambjörnsson, T., ... & Mehlig, B. (2015). Extension of nanoconfined DNA: Quantitative comparison between experiment and theory. Physical review E, 92(6), 062701.
+
+Kundukad, B., Yan, J., & Doyle, P. S. (2014). Effect of YOYO-1 on the mechanical properties of DNA. Soft matter, 10(48), 9721-9728.
+
+Montes, R. J., Ladd, A. J., & Butler, J. E. (2019). Transverse migration and microfluidic concentration of DNA using Newtonian buffers. Biomicrofluidics, 13(4).
+
+Reisner, W., Beech, J. P., Larsen, N. B., Flyvbjerg, H., Kristensen, A., & Tegenfeldt, J. O. (2007). Nanoconfinement-enhanced conformational response of single DNA molecules to changes in ionic environment. Physical review letters, 99(5), 058302.
+
