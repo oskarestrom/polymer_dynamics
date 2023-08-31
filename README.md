@@ -13,6 +13,23 @@ Based on the number of base pairs for a given DNA strand, we can extract the fol
 
 In the theory section below, the equations and assumptions for these variables are given.
 
+## Installation
+
+### Dependencies
+You need to install the following libraries to run this package:
+```shell
+- pip install numpy > 1.21.5
+- pip install matplotlib > 3.5.2
+- pip install pandas >= 1.3.3, < 2
+- pip install pickle
+- pip install seaborn
+```
+### Install this script
+Find this package on [test.pypi.org](https://test.pypi.org/project/polymer-dynamics)
+```shell
+pip install -i https://test.pypi.org/simple/ polymer-dynamics
+```
+
 ## Using the script
 The function create_DNA_df() will create a pandas dataframe containing all the variables listed above. The DNA lengths 1,2,5,10,20,48.5 and 165.6 kbp are slected as long as an ionic strength corresponding to 5x TE with a dye to base pair staining ratio at 1:200. The temperature is set to 22 C (which the effective width and Zimm relaxation time depends on).
 ```python
