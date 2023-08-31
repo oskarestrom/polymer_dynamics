@@ -383,7 +383,7 @@ def create_the_dataframe(N_bp, C_list, I_list, staining_list, eta_s_list, perfor
     for s in staining_list:
         staining_ratio = int(str.split(s, ':')[1])
         df = df_base.copy()
-        df['L'] = df.apply(lambda row:row.N_bp * L_singleBP * calc_dyeExtensionRatio(staining_ratio), axis=1)
+        df['L'] = df.apply(lambda row:get_contour_length(row.N_bp, staining_ratio), axis=1)
         df['N'] = df.apply(lambda row: row.L/b, axis=1)
         df['staining'] = s
         df['staining_ratio'] = staining_ratio
@@ -402,6 +402,9 @@ def create_the_dataframe(N_bp, C_list, I_list, staining_list, eta_s_list, perfor
     #Combine the data frames based on the different ionic strengths
     df = pd.concat(df_list)
     return df
+
+def get_contour_length(N_bp, staining_ratio):
+    return N_bp * L_singleBP * calc_dyeExtensionRatio(staining_ratio)
 
 def round_variables(df):
     df['R_e_ideal'] = np.round(df['R_e_ideal']*1e6,2)

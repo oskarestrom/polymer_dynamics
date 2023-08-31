@@ -27,7 +27,7 @@ I_5xTE_0BME = 30.993*1e-3 #Molar
 T_deg_C = 22 
 
 #Concentrations list
-C_list = np.array([400]) #DNA concentations in uM, useful if one wants the C/C_overlap ratio    
+C_list = np.array([400]) #DNA concentations in ug/mL, useful if one wants the C/C_overlap ratio    
 
 #Lengths list
 N_bp = np.array([1000, 2000, 5000, 10000, 20000,  48502, 165600])
@@ -119,6 +119,21 @@ The results of Kundukad et al. [Kundukad, 2014] contend the claim by Reisner et 
 
 The number of Kuhn segments, $N$, which is used to define the radius, is then calculated as $N = L/b = L_{raw}*s_f/b$, where $s_f$ is the staining factor.
 
+### Calculating the Contour Length with this script
+We can then use the function get_contour_length() to extract the contour length for any DNA length and staining ratio
+```python
+import polymer_dynamics.dna_functions as dn
+
+N_bp = 48500 #number of base pairs
+staining_ratio = 200 #1:200 staining ratio
+L = dn.get_contour_length(N_bp, staining_ratio)
+print(f'{L*10**6:.1f} um')
+```
+#### Output:
+```
+16.6 um
+```
+
 ### Ideal Chain Radius Calculation
 The worm-like chain (WLC) model (also called the Kratky-Porod model) describes the DNA dynamics more more accurately compared to the FJC-model by defining the polymer as semi-flexible. It means that the chain is stiff at the length scale of a monomer but flexible at the length scale of the entire polymer. The angle of a single segment affects the angle of its neighbour compared to FJC where the angles of segments are completely unrelated. The WLC model can be said to describe a polymer as a continuously flexible isotropic rod. The end-end distance of the polymer, $R_e$, is a measure of the size of the coiled-up polymer. The WLC model describes $R_e$ for long chains ($L≫L_p$) with [Colby & Rubinstein, 2003]:
 
@@ -134,8 +149,47 @@ $$R_G^{\theta} \propto \sqrt{L}$$
 
 $$R_G^{\theta} \propto l_p\sqrt{L}$$
 
-### Flory Radius
-### Effect of ionic environment on the radius
+### Calculating the ideal DNA Radii with this script
+
+```python
+import polymer_dynamics.dna_functions as dn
+import numpy as np
+
+N_bp = 48500 #number of base pairs
+staining_ratio = 200 #1:200 staining ratio
+
+#Ionic Strength of 5x TE:
+I_5xTE_0BME = 30.993*1e-3 #Molar
+
+#The persistence length
+l_p = dn.get_l_p_OSF(I_5xTE_0BME)
+
+#The Kuhn length
+b = 2*l_p
+
+#The number of Kuhn segments
+N = dn.get_Number_of_Kuhn_Segments(staining_ratio, b=b, N_bp = N_bp)
+
+#The ideal end-to-end distance
+R_e_ideal = b * np.sqrt(N)
+
+#The ideal radius of gyration
+R_g_ideal = R_e_ideal/np.sqrt(6)
+
+print('The persistence length is {:.1f} nm'.format(l_p*10**9))
+print('The number of Kuhn segments is {:.1f}'.format(N))
+print('The ideal end-to-end distance is {:.1f} um'.format(R_e_ideal*10**6))
+print('The ideal radius of gyration is {:.2f} um'.format(R_g_ideal*10**6))
+```
+#### Output:
+```
+The persistence length is 51.0 nm
+The number of Kuhn segments is 162.7
+The ideal end-to-end distance is 1.3 um
+The ideal radius of gyration is 0.53 um
+```
+
+### Flory Radius and the effect of ionic environment on the radius
 It is important to note that most experiments conducted on the polymer physics of DNA use excess salt to screen the electrostatic interactions. 
 
 When the other effects are also included, the following expression for the end-end distance is given:
@@ -156,6 +210,39 @@ where $N_A$ is Avogadro's number, $e$ the electronic charge and $I$ the ionic st
 
 Iarko et al. calculated the effective width of DNA at 5 x TBE to be 4.6 nm. [[Iarko, 2015]](https://publications.lib.chalmers.se/records/fulltext/225267/local_225267.pdf). This value is the same as I end up with in the calculation below.
 
+### Calculating the Flory radius with this script
+```python
+import polymer_dynamics.dna_functions as dn
+
+N_bp = 48500 #number of base pairs
+
+#Ionic Strength of 5x TE:
+I_5xTE_0BME = 30.993*1e-3 #Molar
+
+#Experiment temperature in Celsius
+T_deg_C = 22 
+
+#The persistence length
+l_p = dn.get_l_p_OSF(I_5xTE_0BME)
+
+#The Kuhn length
+b = 2*l_p
+
+#The effective width
+w_eff = dn.calc_w_eff(I_5xTE_0BME, T_deg_C=T_deg_C)
+
+#The number of Kuhn segments
+N = dn.get_Number_of_Kuhn_Segments(staining_ratio, b=b, N_bp = N_bp)
+
+#The Flory radius
+R_flory = dn.calc_Flory_radius(w_eff, l_p,b,N)
+
+print('The Flory radius is {:.2f} um'.format(R_flory*10**6))
+```
+#### Output:
+```
+The Flory radius is 1.22 um
+```
 ### The overlap concentration
 The relation between the volume fraction of a polymer solution, i.e. the ratio of the volume of the polymer in the solution to the volume of the solution is related to the mass concentration of the polymer, the ratio of the polymer mass to the volyme of the solution is given by:
 
@@ -163,7 +250,7 @@ $$\phi= \dfrac{c}{\rho}= c \dfrac{v_{mon}N_A}{M_{mon}}$$
 
 where $\rho = \dfrac{M_{mon}}{v_{mon}N_A}$
 
-The volume fraction of **a single molecule inside its pervaded volume** (pervaded volume = the volume spanned by the polymer chain, $V=R^3$ [Rubinstein book, 2003]]) is called the overlap volume fraction $\phi^*$:
+The volume fraction of **a single molecule inside its pervaded volume** (pervaded volume = the volume spanned by the polymer chain, $V=R^3$ [Colby & Rubinstein, 2003]]) is called the overlap volume fraction $\phi^*$:
 
 $$\phi^* = \dfrac{\text{Volume taken up by the monomers}}{\text{Volume taken up by the polymer blob}}=\dfrac{Nv_{mon}}{V}$$
 
@@ -171,7 +258,7 @@ where $N$ is the number of monomers, $v_{mon}$ is the monomer volume and $V$ is 
 
 $$c^*=\dfrac{\text{Base pair concentration of the monomers}}{\text{Base pair concentration of the polymer blob}}\dfrac{\rho Nv_{mon}}{V}=\dfrac{M}{V N_{A}}$$
 
-where $M$ is the polymer molecular weight, $N_A$ is Avogadro’s constant. For a polymer with a volume, $V=4πR_g^3/3 $, the overlap concentration is written as [Doi 1998]:
+where $M$ is the polymer molecular weight, $N_A$ is Avogadro’s constant. For a polymer with a volume, $V=4πR_g^3/3 $, the overlap concentration is written as [Doi 1996]:
 
 $$c^{*}= \dfrac{M}{\dfrac{4π}{3} R_g^3 N_A}$$
 
@@ -184,9 +271,45 @@ $$M = N_{bp} \cdot M_{bp \ avg} = N_{bp} \cdot 0.65 \ kg/mol $$
 In other words, the concentration when the solution concentration is equal to that of the pervaded volume of a single polymer.
 $$c^*=\dfrac{\text{C solution}}{\text{C inside a blob}}$$
 
+### Calculating the Overlap Concentration with this script
+```python
+import polymer_dynamics.dna_functions as dn
+import numpy as np
+
+N_bp = 48500 #number of base pairs
+staining_ratio = 200 #1:200 staining ratio
+
+#Ionic Strength of 5x TE:
+I_5xTE_0BME = 30.993*1e-3 #Molar
+
+#The persistence length
+l_p = dn.get_l_p_OSF(I_5xTE_0BME)
+
+#The Kuhn length
+b = 2*l_p
+
+#The number of Kuhn segments
+N = dn.get_Number_of_Kuhn_Segments(staining_ratio, b=b, N_bp = N_bp)
+
+#The ideal end-to-end distance
+R_e_ideal = b * np.sqrt(N)
+
+#The ideal radius of gyration
+R_g_ideal = R_e_ideal/np.sqrt(6)
+
+c_overlap = dn.RadiusToExpOverlapConc(N_bp, R_g_ideal)
+
+print('The overlap concentration is {:.2f} ug/mL'.format(c_overlap))
+```
+#### Output:
+```
+The overlap concentration is 83.18 uM
+```
 ### References
 
 Colby, R. H., & Rubinstein, M. (2003). Polymer physics. New-York: Oxford University, 100, 274.
+
+Doi, M. (1996). Introduction to polymer physics. Oxford university press.
 
 Hsieh, C. C., Balducci, A., & Doyle, P. S. (2008). Ionic effects on the equilibrium dynamics of DNA confined in nanoslits. Nano letters, 8(6), 1683-1688.
 
