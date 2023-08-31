@@ -13,27 +13,53 @@ Based on the number of base pairs for a given DNA strand, we can extract the fol
 
 In the theory section below, the equations and assumptions for these variables are given.
 
-## 
+## Using the script
+The function create_DNA_df() will create a pandas dataframe containing all the variables listed above.
 ```python
 import polymer_dynamics.dna_functions as dn
 import numpy as np
 import pandas as pd
 
-C_list = np.array([400])
-n = len(C_list)
-lengths = np.array([48502]*n)
-df = dn.create_DNA_df(N_bp=lengths, C_list=C_list, perform_rounding=False)
+#Ionic Strength of 5x TE:
+I_5xTE_0BME = 30.993*1e-3 #Molar
 
-df_lambda = df[(df['staining'] == '1:200')] #Select only staining 1:200
-df_lambda = df_lambda.reset_index()
+#Experiment temperature in Celsius
+T_deg_C = 22 
+
+#Concentrations list
+C_list = np.array([400]) #DNA concentations in uM, useful if one wants the C/C_overlap ratio    
+
+#Lengths list
+N_bp = np.array([1000, 2000, 5000, 10000, 20000,  48502, 165600])
+
+#Ionic Strengths list
+I_list = np.array([I_5xTE_0BME])
+
+#Create dataframe
+df = dn.create_DNA_df(N_bp=N_bp, 
+                      C_list=C_list, 
+                      I_list = I_list,
+                      staining_list = ['1:200'],
+                      perform_rounding=False,
+                      T_deg_C=T_deg_C)
+
+df = df.reset_index()
 
 pd.set_option('display.float_format', lambda x: '%.4g' % x)
-df_lambda[['conc_DNA','L','I', 'l_p','w_eff_T23C','R_e_T23C_Flory','R_g_T23C_Flory','c_overlap_T23C_Flory', 'tau_zimm_low_c','C_ratio_Flory']]
+df[['conc_DNA','L','I', 'l_p','w_eff_T23C','R_g','R_e_T23C_Flory','R_g_T23C_Flory','c_overlap_T23C_Flory', 'tau_zimm_low_c','C_ratio_Flory']]
+
 
 ```
 |conc_DNA|L    |I      |l_p|w_eff_T23C|R_e_T23C_Flory|R_g_T23C_Flory|c_overlap_T23C_Flory|tau_zimm_low_c|C_ratio_Flory|
 |--------|-----|-------|---|----------|--------------|--------------|--------------------|--------------|-------------|
-|400     |16.61|0.03099|51 |5.79      |1.22          |0.5           |102                 |2.07          |3.921        |
+|400     |3.426e-07|0.03099|5.105e-08|5.79e-09  |1.243e-07     |5.075e-08     |1973                |0.002207      |0.2028       |
+|400     |6.851e-07|0.03099|5.105e-08|5.79e-09  |1.868e-07     |7.626e-08     |1162                |0.00749       |0.3442       |
+|400     |1.713e-06|0.03099|5.105e-08|5.79e-09  |3.201e-07     |1.307e-07     |577.6               |0.03768       |0.6925       |
+|400     |3.426e-06|0.03099|5.105e-08|5.79e-09  |4.81e-07      |1.964e-07     |340.3               |0.1279        |1.175        |
+|400     |6.851e-06|0.03099|5.105e-08|5.79e-09  |7.229e-07     |2.951e-07     |200.5               |0.4341        |1.995        |
+|400     |1.661e-05|0.03099|5.105e-08|5.79e-09  |1.217e-06     |4.967e-07     |102                 |2.07          |3.921        |
+|400     |5.673e-05|0.03099|5.105e-08|5.79e-09  |2.504e-06     |1.022e-06     |39.96               |18.04         |10.01        |
+
 
 ## Theory
 
