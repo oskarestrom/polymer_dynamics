@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling", "numpy >= 1.19, < 2", "pandas >= 1.3.3, < 2", matplotlib, pickle, seaborn"]
+build-backend = "hatchling.build"
+
+
+
+
+[tool.hatch.build]
+exclude = [
+  "videos/*.gif",
+]
+
+[project]
+name = "polymer_dynamics"
+version = "0.0.1"
+authors = [
+  { name="Oskar E. Strom", email="oskarestrom@protonmail.com" },
+]
+description = "Simple polymer dynamics calculations"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/oskarestrom/mp4_video_generation"
