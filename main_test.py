@@ -38,7 +38,7 @@ df = dn.create_DNA_df(N_bp=N_bp,
 df = df.reset_index()
 
 pd.set_option('display.float_format', lambda x: '%.4g' % x)
-df[['conc_DNA','L','I', 'l_p','w_eff_T23C','R_g','R_e_T23C_Flory','R_g_T23C_Flory','c_overlap_T23C_Flory', 'tau_zimm_low_c','C_ratio_Flory']]
+df[['L','I', 'l_p','w_eff_T23C','R_g','R_e_T23C_Flory','R_g_T23C_Flory','c_overlap_T23C_Flory', 'tau_zimm_low_c','C_ratio_Flory']]
 #%%
 
 importlib.reload(dn)
