@@ -1,14 +1,6 @@
 [build-system]
-requires = ["hatchling", "numpy >= 1.19, < 2", "pandas >= 1.3.3, < 2", matplotlib, pickle, seaborn"]
+requires = ["hatchling", "numpy >= 1.19, < 2", "pandas >= 1.3.3, < 2", "matplotlib >= 3.5.2, < 4", "seaborn >= 0.11.2, < 1"]
 build-backend = "hatchling.build"
-
-
-
-
-[tool.hatch.build]
-exclude = [
-  "videos/*.gif",
-]
 
 [project]
 name = "polymer_dynamics"

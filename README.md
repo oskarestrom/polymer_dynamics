@@ -18,17 +18,18 @@ In the theory section below, the equations and assumptions for these variables a
 ### Dependencies
 You need to install the following libraries to run this package:
 ```shell
-- pip install numpy > 1.21.5
-- pip install matplotlib > 3.5.2
+- pip install numpy >= 1.19, < 2
+- pip install matplotlib >= 3.5.2, < 4
 - pip install pandas >= 1.3.3, < 2
-- pip install pickle
-- pip install seaborn
+- pip install seaborn  seaborn >= 0.11.2, < 1
 ```
 ### Install this script
 Find this package on [test.pypi.org](https://test.pypi.org/project/polymer-dynamics)
 ```shell
 pip install -i https://test.pypi.org/simple/ polymer-dynamics
 ```
+### Cite this work
+In a short amount of time, this work will have a Digital Object Identifier (DOI) through Zenedo that you can cite.
 
 ## Using the script
 The function create_DNA_df() will create a pandas dataframe containing all the variables listed above. The DNA lengths 1,2,5,10,20,48.5 and 165.6 kbp are slected as long as an ionic strength corresponding to 5x TE with a dye to base pair staining ratio at 1:200. The temperature is set to 22 C (which the effective width and Zimm relaxation time depends on).
